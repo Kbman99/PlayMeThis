@@ -1,0 +1,153 @@
+{% extends "layout.html" %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="ui grid">
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="three wide column">
+            <span id="artist" class="ui header"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="two wide column"></div>
+            <div class="twelve wide column">
+                <div>
+                    <span id="song" style="font-size:60px" class="ui header">Awaiting good vibes....</span>
+                </div>
+            </div>
+    </div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row"></div>
+    <div class="row">
+        <div class="four wide column"></div>
+        <div class="eight wide center aligned column">
+            <p id="para" style="font-size:22px;line-height:2">
+                Hey, I'm MusicBot. You can send me your song requests to my Twitter @PlayMeThisSong from SoundCloud
+                and I'll do my best to play them for you.
+                <br>Enjoy your stay and vibe out....
+            </p>
+        </div>
+    </div>
+
+	{% if current_user.is_authenticated %}
+      <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.compatibility.min.js"></script>
+      <script>
+        var loaded = false;
+
+        // Enable pusher logging - don't include this in production
+        Pusher.logToConsole = true;
+
+        var pusher = new Pusher('d33b6f10de4245953937', {
+          cluster: 'us2',
+          encrypted: true
+        });
+
+        var p = $("#para");
+        var song_span = $("#song");
+        var artist_span = $("#artist");
+        var details = $("#artist, #song");
+        var body = $("#body");
+
+        function stylize() {
+            details.css({
+                "color": "white",
+                "text-align": "center",
+                "display": "inline-block",
+                "background-color": "rgba(0,0,0,.8)",
+                "padding": "4px 10px 4px 10px"
+            });
+            body.css({
+                "background-repeat": "no-repeat",
+                "background-position": "center",
+                "background-size": "cover",
+                "min-height": "100%",
+                "padding-top": "20px",
+                "padding-bottom": "20px",
+                "margin": "0px"
+            });
+        }
+
+        function fadeIt(song_name, artist_name, artwork_url, loaded) {
+            details.fadeTo(800, 0, function(){
+                if (loaded === false){
+                    stylize();
+                }
+                body.css('background-image', artwork_url);
+                song_span.html(song_name);
+                artist_span.html(artist_name);
+            }).delay(1000).fadeTo(1500, 1);
+        }
+
+        var channel = pusher.subscribe('my-channel');
+        channel.bind('new_song', function(data) {
+            var artwork_url = JSON.stringify(data.message.song_artwork_url);
+            var artist_name = JSON.stringify(data.message.song_artist);
+            artist_name = artist_name.replace(/\"/g, "");
+            var song_name = JSON.stringify(data.message.song_name);
+            song_name = song_name.replace(/\"/g, "");
+            var song_url = JSON.stringify(data.message.song_url);
+            var song_artwork_url = 'url(' + artwork_url + ')';
+            if (loaded === false){
+                // Change the two text spans to correct style and hide p element
+                p.fadeOut();
+                fadeIt(song_name, artist_name, song_artwork_url, loaded);
+{#                details.fadeOut();#}
+{#                stylize();#}
+{#                body.css('background-image', song_artwork_url);#}
+{#                details.fadeIn();#}
+                //fadeIt(song_name, artist_name, song_artwork_url, loaded);
+{#                p.innerHTML = '';#}
+{#                var artist_span = document.getElementById("artist");#}
+{#                var song_span = document.getElementById("song");#}
+{#                var bod = document.getElementById("body");#}
+{#                var elements = $("body, #para, #song, #artist");#}
+{#                var details = $("#song, #artist");#}
+{#                artist_span.style.backgroundColor = "rgba(0,0,0,.8)";#}
+{#                artist_span.style.color = "white";#}
+{#                artist_span.style.textAlign = "center";#}
+{#                artist_span.style.display = "inline-block";#}
+{#                var loader = document.getElementById("loader");#}
+{#                bod.classList.add("backgroundAnimated");#}
+                loaded = true;
+            }
+            else {
+                fadeIt(song_name, artist_name, song_artwork_url, loaded);
+            }
+            //fadeIt(song_name, artist_name, song_artwork_url, false);
+{#            var artist_span = document.getElementById("artist");#}
+{#            var p = document.getElementById("para");#}
+{#            artist_span.innerHTML = artist_name.replace(/\"/g, "");#}
+{#            artist_span.style.backgroundColor = "rgba(0,0,0,.8)";#}
+{#            artist_span.style.color = "white";#}
+{#            artist_span.style.textAlign = "center";#}
+{#            artist_span.style.display = "inline-block";#}
+{#            var song_span = document.getElementById("song");#}
+{#            song_span.innerHTML = song_name.replace(/\"/g, "");#}
+{#            song_span.style.backgroundColor = "rgba(0,0,0,.8)";#}
+{#            song_span.style.color = "white";#}
+{#            song_span.style.textAlign = "center";#}
+{#            song_span.style.display = "inline-block";#}
+{#            var bod = document.getElementById("body");#}
+{#            bod.style.backgroundImage = song_artwork_url;#}
+{#            bod.style.backgroundRepeat = 'no-repeat';#}
+{#            bod.style.backgroundPosition = 'center';#}
+{#            bod.style.backgroundSize = 'cover';#}
+{#            bod.style.minHeight = "100%";#}
+{#            bod.style.paddingTop = "20px";#}
+{#            bod.style.paddingBottom = "20px";#}
+{#            bod.style.margin = "0px";#}
+        });
+
+
+      </script>
+	{% endif %}
+</div>
+{% endblock %}
