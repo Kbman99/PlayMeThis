@@ -47,8 +47,22 @@
 	{% if current_user.is_authenticated %}
       <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.compatibility.min.js"></script>
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
       <script>
         var loaded = false;
+        var namespace = '/musicroom';
+        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+
+
+        socket.on('connect', function() {
+          console.log("Connected");
+          socket.emit('joined', {data: 'I\'m connected!'});
+        });
+
+        socket.on('message', function(data) {
+            console.log(data);
+            console.log("ok");
+        });
 
         // Enable pusher logging - don't include this in production
         Pusher.logToConsole = true;
@@ -110,9 +124,6 @@
             var song_name = JSON.stringify(data.message.song_name).replace(/\"/g, "");
             var song_url = JSON.stringify(data.message.song_url);
             var twitter_username = JSON.stringify(data.message.song_requester);
-            if (twitter_username !== undefined){
-                twitter_username = twitter_username.replace(/\"/g, "");
-            }
             var song_artwork_url = 'url(' + artwork_url + ')';
             if (loaded === false){
                 // Change the two text spans to correct style and hide p element

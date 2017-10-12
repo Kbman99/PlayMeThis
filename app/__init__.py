@@ -27,7 +27,7 @@ from flask.ext.bcrypt import Bcrypt
 bcrypt = Bcrypt(app)
 
 # Import the views
-from app.views import main, user, error
+from app.views import main, user, error, api
 app.register_blueprint(user.userbp)
 
 # Setup the user login process
@@ -40,7 +40,7 @@ login_manager.login_view = 'userbp.signin'
 
 # Setup webhook token
 from .toolbox import webhook
-webhook.setup_token(app)
+webhook.setup_token()
 
 
 @login_manager.user_loader

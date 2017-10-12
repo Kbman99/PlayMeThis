@@ -12,6 +12,7 @@ from app.models import User
 
 admin = Admin(app, name='Admin', template_mode='bootstrap3')
 
+
 class ModelView(ModelView):
 
     def is_accessible(self):
@@ -21,6 +22,7 @@ class ModelView(ModelView):
                 {'WWW-Authenticate': 'Basic realm="Login Required"'}
             ))
         return True
+
 
 # Users
 admin.add_view(ModelView(User, db.session))

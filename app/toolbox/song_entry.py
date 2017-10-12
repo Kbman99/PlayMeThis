@@ -1,4 +1,3 @@
-from app import app
 
 
 class SongEntry:

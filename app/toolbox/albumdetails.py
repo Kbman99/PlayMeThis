@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+import sys
 
 
 def get_song_details(link):
@@ -11,11 +12,9 @@ def get_song_details(link):
     """
     r = requests.get(link)
     song_url = r.url
-    # artist_name, song_name = urlparse(song_url).path[1:].split("/") if urlparse(song_url).path[0] == "/" \
-    #     else urlparse(song_url).path.split("/")
     if "soundcloud" in urlparse(song_url).netloc:
         song_domain = "soundcloud"
-        print("made it to soundcloud")
+        print("made it to soundcloud", sys.stderr)
     else:
         return {}
         # return {
@@ -38,14 +37,6 @@ def get_song_details(link):
     }
 
 
-# def get_artwork(song_url, song_domain):
-#     if song_domain == "soundcloud":
-#         soundcloud_artwork(song_url)
-
-
-#def soundcloud_artwork(song_url):
-
-
 def sc_scraper(content):
     """
     Use Beautiful Soup to parse through the content of the doc and find relevant details
@@ -53,18 +44,16 @@ def sc_scraper(content):
     :return: artwork url, song name and song artist
     """
     soup = BeautifulSoup(content, "html.parser")
-    print(soup)
     images = soup.find_all("img", src=True)
-    print(images)
     for image in images:
         if "i1.sndcdn" in image["src"]:
             song_artwork_url = image["src"]
-            print("artwork url: " + song_artwork_url)
+            print("song artwork: " + song_artwork_url, sys.stderr)
             break
     song_name = soup.find("a", itemprop=True).get_text() if not '' else ''
-    print("song name: " + song_name)
+    print("song name: " + song_name, sys.stderr)
     song_artist = soup.find("a", itemprop=True).next_sibling.next_sibling.get_text()
-    print("song artist " + song_artist)
+    print("song artist " + song_artist, sys.stderr)
     return song_artwork_url, song_name, song_artist
 
 
