@@ -22,7 +22,7 @@ MAIL_PORT = 465
 MAIL_USE_TLS = False
 MAIL_USE_SSL = True
 MAIL_USERNAME = 'twitterplaymethis'
-MAIL_PASSWORD = 'cassie96'
+MAIL_PASSWORD = 'twitterpassword'
 ADMINS = ['twitterpalymethis@gmail.com']
 
 # Number of times a password is hashed

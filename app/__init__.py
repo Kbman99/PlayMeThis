@@ -1,36 +1,37 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_mail import Mail
-from flask_bcrypt import Bcrypt
-from flask_debugtoolbar import DebugToolbarExtension
-from flask_login import LoginManager
-
-from app import admin
-from app.models import User
-from app.views import main, user, error, api
-from app.logger_setup import logger
-
-from .toolbox import webhook
-
 
 app = Flask(__name__)
 
 app.config.from_object('app.config')
 
+from app.logger_setup import logger
+
+
+from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy(app)
+
+from flask_mail import Mail
 mail = Mail(app)
-bcrypt = Bcrypt(app)
+
+from flask_debugtoolbar import DebugToolbarExtension
+app.config['DEBUG_TB_TEMPLATE_EDITOR_ENABLED'] = True
+app.config['DEBUG_TB_PROFILER_ENABLED'] = True
 toolbar = DebugToolbarExtension(app)
+
+from flask_bcrypt import Bcrypt
+bcrypt = Bcrypt(app)
+
+from app.views import main, user, error, api
+app.register_blueprint(user.userbp)
+
+from flask_login import LoginManager
+from app.models import User
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'userbp.signin'
 
-app.config['DEBUG_TB_TEMPLATE_EDITOR_ENABLED'] = True
-app.config['DEBUG_TB_PROFILER_ENABLED'] = True
-
-app.register_blueprint(user.userbp)
-
+from .toolbox import webhook
 webhook.setup_token()
 
 

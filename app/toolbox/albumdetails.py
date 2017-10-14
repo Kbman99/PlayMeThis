@@ -49,12 +49,12 @@ def sc_scraper(content):
     for image in images:
         if "i1.sndcdn" in image["src"]:
             song_artwork_url = image["src"]
-            print("song artwork: " + song_artwork_url, sys.stderr)
+            # print("song artwork: " + song_artwork_url, sys.stderr)
             break
     song_name = soup.find("a", itemprop=True).get_text() if not '' else ''
-    print("song name: " + song_name, sys.stderr)
+    # print("song name: " + song_name, sys.stderr)
     song_artist = soup.find("a", itemprop=True).next_sibling.next_sibling.get_text()
-    print("song artist " + song_artist, sys.stderr)
+    # print("song artist " + song_artist, sys.stderr)
     return song_artwork_url, song_name, song_artist
 
 
