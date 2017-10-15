@@ -1,6 +1,7 @@
-from app import app, models, db
-from flask import request, jsonify, abort
+from app import app, models, db, config
+from flask import request, jsonify, abort, render_template, flash, redirect, url_for
 from app.toolbox import get_ip, webhook, playlist
+from flask_login import login_required
 
 from datetime import datetime, timedelta
 
@@ -26,14 +27,16 @@ def web_hook():
         clientip = get_ip.get_ip(request)
         client = models.AuthorizedClients.query.filter_by(client_ip=clientip).first()
         if client is not None:
-            return jsonify({'status': 'user already authorized'}), 401
+            flash('You have already been authorized to use the webhook feature.', 'info')
+            return redirect(url_for('index'))
         if verify_token == app.config["WEBHOOK_VERIFY_TOKEN"]:
             client = models.AuthorizedClients(
                 client_ip=get_ip.get_ip(request)
             )
             db.session.add(client)
             db.session.commit()
-            return jsonify({'status': 'success'}), 200
+            flash('You are now authorized to use the webhook feature! Enjoy!', 'positive')
+            return redirect(url_for('index'))
         else:
             return jsonify({'status': 'bad token'}), 401
 
@@ -56,3 +59,15 @@ def web_hook():
 
     else:
         abort(400)
+
+
+@app.route('/webhook/setup', methods=['GET', 'POST'])
+@login_required
+def web_hook_setup():
+    clientip = get_ip.get_ip(request)
+    client = models.AuthorizedClients.query.filter_by(client_ip=clientip).first()
+    if client:
+        verified = True
+    else:
+        verified = False
+    return render_template('user/webhooksetup.html', token=config.WEBHOOK_VERIFY_TOKEN, verified=verified)

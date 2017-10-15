@@ -18,8 +18,7 @@ def setup_token():
     :param app: The main app
     :return: Adds verifications token to config
     '''
-
-    if os.getenv('WEBHOOK_VERIFY_TOKEN') is None:
+    if app.config["WEBHOOK_VERIFY_TOKEN"] is None:
         print('WEBHOOK_VERIFY_TOKEN has not been set in the environment.\nGenerating random token...')
         token = temp_token()
         print('Token: {}'.format(token))

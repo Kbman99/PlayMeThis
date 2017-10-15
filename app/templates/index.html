@@ -10,21 +10,21 @@
     <div class="row"></div>
     <div class="row">
         <div class="two wide column"></div>
-        <div class="three wide column">
+        <div class="seven wide mobile five wide computer column">
             <span id="artist" class="ui header"></span>
         </div>
     </div>
     <div class="row">
         <div class="two wide column"></div>
-            <div class="twelve wide column">
-                <div>
-                    <span id="song" style="font-size:55px" class="ui header">Awaiting good vibes....</span>
-                </div>
+        <div class="twelve wide mobile twelve wide computer column">
+            <div>
+                <span id="song" style="font-size:40px" class="ui header">Awaiting good vibes....</span>
             </div>
+        </div>
     </div>
     <div class="row">
         <div class="two wide column"></div>
-        <div class="five wide column">
+        <div class="eight wide mobile six wide computer column">
             <div>
                 <span id="twitter-username" class="ui header" style="display:none">
                 </span>
@@ -34,14 +34,27 @@
     <div class="row"></div>
     <div class="row"></div>
     <div class="row">
-        <div class="four wide column"></div>
-        <div class="eight wide center aligned column">
+{#        <div class="four wide column"></div>#}
+        <div class="fourteen wide mobile eight wide computer center aligned centered column">
             <p id="para" style="font-size:22px;line-height:2">
                 Hey, I'm MusicBot. You can send me your song requests to my Twitter @PlayMeThisSong from SoundCloud
                 and I'll do my best to play them for you.
                 <br>Enjoy your stay and vibe out....
             </p>
         </div>
+    </div>
+{#    <div class="ui center aligned segment">#}
+{#            <span id="song-link-span" style="position: fixed; bottom: 6vh; display: none">#}
+{#                <a id="song-link" href="#">Artist SoundCloud <i class="large soundcloud icon"></i></a>#}
+{#            </span>#}
+{#    </div>#}
+    <div id="sc-button-div" style="width: 100%;align-items: center;justify-content: center;position: fixed; bottom:12vh;display: none">
+        <form id="sc-link" action="" target="_blank">
+            <button class="small ui orange compact button" style="text-align: center"><i class="large soundcloud icon"></i>
+            Artist Soundcloud
+        </button>
+        </form>
+    </div>
     </div>
 
 	{% if current_user.is_authenticated %}
@@ -64,6 +77,11 @@
         var details = $("#artist, #song, #twitter-username");
         var body = $("#body");
         var twitter = $("#twitter-username");
+        var song_link = $("#song-link");
+        var song_link_span = $("#song-link-span");
+        var sc_button_div = $("#sc-button-div");
+        var sc_link = $("#sc-link");
+
 
         function stylize() {
             details.css({
@@ -82,9 +100,16 @@
                 "padding-bottom": "20px",
                 "margin": "0px"
             });
+            sc_button_div.css({
+                "display": "flex",
+                "color": "white"
+            });
+            sc_link.css({
+                "color": "black"
+            });
         }
 
-        function fadeIt(song_name, artist_name, artwork_url, twitter_username, loaded) {
+        function fadeIt(song_name, artist_name, artwork_url, twitter_username, song_url,loaded) {
             details.fadeTo(800, 0, function(){
                 if (loaded === false){
                     stylize();
@@ -96,6 +121,7 @@
                 else {
                     twitter.html('Playing via autoplaylist');
                 }
+                sc_link.attr('action', song_url);
                 song_span.html(song_name);
                 artist_span.html(artist_name);
             }).delay(1000).fadeTo(1500, 1);
@@ -104,11 +130,11 @@
         var channel = pusher.subscribe('my-channel');
 
         channel.bind('new_song', function(data) {
-            console.log(JSON.stringify(data))
+            console.log(JSON.stringify(data));
             var artwork_url = JSON.stringify(data.message.song_artwork_url);
             var artist_name = JSON.stringify(data.message.song_artist).replace(/\"/g, "");
             var song_name = JSON.stringify(data.message.song_name).replace(/\"/g, "");
-            var song_url = JSON.stringify(data.message.song_url);
+            var song_url = JSON.stringify(data.message.song_url).replace(/\"/g, "");
             var twitter_username = JSON.stringify(data.message.song_requester);
             if (twitter_username !== undefined){
                 twitter_username = twitter_username.replace(/\"/g, "");
@@ -117,11 +143,11 @@
             if (loaded === false){
                 // Change the two text spans to correct style and hide p element
                 p.fadeOut();
-                fadeIt(song_name, artist_name, song_artwork_url, twitter_username, loaded);
+                fadeIt(song_name, artist_name, song_artwork_url, twitter_username, song_url, loaded);
                 loaded = true;
             }
             else {
-                fadeIt(song_name, artist_name, song_artwork_url, twitter_username, loaded);
+                fadeIt(song_name, artist_name, song_artwork_url, twitter_username, song_url, loaded);
             }
         });
 
