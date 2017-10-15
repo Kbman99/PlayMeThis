@@ -26,10 +26,10 @@
 				<div class="ui attached inverted menu">
 				  	{{ m.nav_link('index', 'MusicRoom') }}
 					{{ m.nav_link('contact', 'Contact') }}
-                    {{ m.nav_link('web_hook_setup', 'Setup') }}
-				 	<div class="right menu">
 				 		<!-- User is logged in -->
 				      	{% if current_user.is_authenticated %}
+                            {{ m.nav_link('web_hook_setup', 'Setup') }}
+                            <div class="right menu">
 				      		<div class="item">
 				        		<a class="ui primary button" href="/user/account">{{ current_user.full_name }}</a>
 				    		</div>
