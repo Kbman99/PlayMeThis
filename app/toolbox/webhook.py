@@ -1,7 +1,7 @@
 # webhook.py
 import os
 from app import app
-from app.toolbox import albumdetails
+from app.toolbox import albumdetails, averagecolor
 import sys
 
 
@@ -38,6 +38,9 @@ def process_webhook(request, pusher_client, pl):
     details = albumdetails.get_song_details(song_url)
     if song_requester:
         details["song_requester"] = song_requester
+    if details.get("song_artwork_url"):
+        details["average_color"] = averagecolor.average_color(details["song_artwork_url"])
+        print(details["average_color"], sys.stderr)
     print(details, sys.stderr)
     print("details: " + str(details), sys.stderr)
     pusher_client.trigger('my-channel', 'new_song', {'message': details})
